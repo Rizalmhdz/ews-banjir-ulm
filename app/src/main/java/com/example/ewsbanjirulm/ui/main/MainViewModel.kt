@@ -2,38 +2,59 @@ package com.example.ewsbanjirulm.ui.main
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 class MainViewModel : ViewModel() {
-    val database = Firebase.database
-    val myRef = database.getReference("Realtime/lokasi_1/")
-    private var suhu: Double = 0.0
+    private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
 
-    fun getRealtime(): String {
-// Read from the database
-        var data = ""
-        myRef.addValueEventListener(object: ValueEventListener {
+    private val pathRef0: DatabaseReference = database.getReference("Realtime/lokasi_1/update_at")
+    private val pathRef1: DatabaseReference = database.getReference("Realtime/lokasi_1/dht22/temperature")
+    private val pathRef2: DatabaseReference = database.getReference("Realtime/lokasi_1/dht22/kelembaban")
+    private val pathRef3: DatabaseReference = database.getReference("Realtime/lokasi_1/total_tip")
+    private val pathRef4: DatabaseReference = database.getReference("Realtime/lokasi_1/tinggi_air_sungai")
 
-            override fun onDataChange(snapshot: DataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                val value = snapshot.getValue<String>()
-                suhu = value?.toDouble() ?: 0.0
-                Log.d(TAG, "Value is: " + value)
+    private val _dataList: MutableLiveData<List<String>> = MutableLiveData()
+
+    val dataList: LiveData<List<String>>
+        get() = _dataList
+
+    init {
+        loadDataFromFirebase()
+    }
+
+    private fun loadDataFromFirebase() {
+        val dataList = mutableListOf<String>()
+
+        val listener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val value = dataSnapshot.value as String
+                dataList.add(value)
+
+                if (dataList.size == 5) {
+                    _dataList.postValue(dataList.toList()) // Mengubah nilai LiveData dengan menggunakan postValue
+                }
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                Log.w(TAG, "Failed to read value.", error.toException())
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Menangani kesalahan jika terjadi
+                println("Error: ${databaseError.message}")
             }
-
-        })
-        return data
+        }
+        pathRef0.addListenerForSingleValueEvent(listener)
+        pathRef1.addListenerForSingleValueEvent(listener)
+        pathRef2.addListenerForSingleValueEvent(listener)
+        pathRef3.addListenerForSingleValueEvent(listener)
+        pathRef4.addListenerForSingleValueEvent(listener)
     }
 
     fun getStatusBanjir(suhu:Double, kelembaban:Double, curahHujan: Double, tinggiAir: Double): String{
