@@ -5,59 +5,63 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 class MainViewModel : ViewModel() {
-    private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
 
-    private val pathRef0: DatabaseReference = database.getReference("Realtime/lokasi_1/update_at")
-    private val pathRef1: DatabaseReference = database.getReference("Realtime/lokasi_1/dht22/temperature")
-    private val pathRef2: DatabaseReference = database.getReference("Realtime/lokasi_1/dht22/kelembaban")
-    private val pathRef3: DatabaseReference = database.getReference("Realtime/lokasi_1/total_tip")
-    private val pathRef4: DatabaseReference = database.getReference("Realtime/lokasi_1/tinggi_air_sungai")
+    private val database = Firebase.database.reference
 
-    private val _dataList: MutableLiveData<List<String>> = MutableLiveData()
-
+    private val _dataList = MutableLiveData<List<String>>()
     val dataList: LiveData<List<String>>
         get() = _dataList
 
     init {
-        loadDataFromFirebase()
+        getDataFromFirebase()
     }
 
-    private fun loadDataFromFirebase() {
-        val dataList = mutableListOf<String>()
+    private fun getDataFromFirebase() {
 
-        val listener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val value = dataSnapshot.value as String
-                dataList.add(value)
+        val path0Ref = database.child("Realtime/lokasi_1/update_at")
+        val path1Ref = database.child("Realtime/lokasi_1/dht22/temperature")
+        val path2Ref = database.child("Realtime/lokasi_1/dht22/kelembaban")
+        val path3Ref = database.child("Realtime/lokasi_1/total_tip")
+        val path4Ref = database.child("Realtime/lokasi_1/tinggi_air_sungai")
 
-                if (dataList.size == 5) {
-                    _dataList.postValue(dataList.toList()) // Mengubah nilai LiveData dengan menggunakan postValue
+        val dataTasks = mutableListOf<Task<DataSnapshot>>()
+
+        // Mengambil data dari setiap path secara asynchronous
+
+        dataTasks.add(path0Ref.get())
+        dataTasks.add(path1Ref.get())
+        dataTasks.add(path2Ref.get())
+        dataTasks.add(path3Ref.get())
+        dataTasks.add(path4Ref.get())
+
+        // Menggunakan Task.whenAllSuccess() untuk menunggu hingga semua tugas selesai
+        Tasks.whenAllSuccess<DataSnapshot>(dataTasks)
+            .addOnSuccessListener { snapshots ->
+                val dataList = mutableListOf<String>()
+
+                // Mengambil nilai dari setiap DataSnapshot dan menyimpannya dalam dataList
+                for (snapshot in snapshots) {
+                    val value = snapshot.getValue(String::class.java)
+                    if (value != null) {
+                        dataList.add(value)
+                    }
                 }
-            }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Menangani kesalahan jika terjadi
-                println("Error: ${databaseError.message}")
+                _dataList.value = dataList
             }
-        }
-        pathRef0.addListenerForSingleValueEvent(listener)
-        pathRef1.addListenerForSingleValueEvent(listener)
-        pathRef2.addListenerForSingleValueEvent(listener)
-        pathRef3.addListenerForSingleValueEvent(listener)
-        pathRef4.addListenerForSingleValueEvent(listener)
+            .addOnFailureListener { exception ->
+                // Penanganan kesalahan jika terjadi
+                Log.e("ExampleViewModel", "Error getting data: ${exception.message}")
+            }
     }
-
-    fun getStatusBanjir(suhu:Double, kelembaban:Double, curahHujan: Double, tinggiAir: Double): String{
+    fun getStatusBanjir(suhu: Double, kelembaban:Double, curahHujan: Double, tinggiAir: Double): String{
         val rules = rulesPotensi(suhu, kelembaban)
         val centroid = evaluateRules(rules)
 
@@ -358,7 +362,7 @@ class MainViewModel : ViewModel() {
 
 
     // ============================================= Fuzzy Logic ==================================================
-    fun trimf(x: Double, points: List<Double>): Double {
+    private fun trimf(x: Double, points: List<Double>): Double {
         val pointA = points[0]
         val pointB = points[1]
         val pointC = points[2]
