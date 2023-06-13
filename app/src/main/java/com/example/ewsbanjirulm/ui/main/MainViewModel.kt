@@ -12,7 +12,8 @@ import com.google.firebase.ktx.Firebase
 
 class MainViewModel : ViewModel() {
     val database = Firebase.database
-    val myRef = database.getReference("Realtime/lokasi_1/am2320/temperature/")
+    val myRef = database.getReference("Realtime/lokasi_1/")
+    private var suhu: Double = 0.0
 
     fun getRealtime(): String {
 // Read from the database
@@ -23,9 +24,7 @@ class MainViewModel : ViewModel() {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
                 val value = snapshot.getValue<String>()
-//                if (value != null) {
-                    data = value.toString()
-//                }
+                suhu = value?.toDouble() ?: 0.0
                 Log.d(TAG, "Value is: " + value)
             }
 
@@ -37,7 +36,7 @@ class MainViewModel : ViewModel() {
         return data
     }
 
-    public fun getStatusBanjir(suhu:Double, kelembaban:Double, curahHujan: Double, tinggiAir: Double): String{
+    fun getStatusBanjir(suhu:Double, kelembaban:Double, curahHujan: Double, tinggiAir: Double): String{
         val rules = rulesPotensi(suhu, kelembaban)
         val centroid = evaluateRules(rules)
 
@@ -52,7 +51,7 @@ class MainViewModel : ViewModel() {
         return labelStatus
     }
 
-    public fun classifyOutput(centroid: Double): String{
+    fun classifyOutput(centroid: Double): String{
         val rendah = fuzzifyClassifyRendah(centroid)
         val sedang = fuzzifyClassifySedang(centroid)
         val tinggi = fuzzifyClassifyTinggi(centroid)

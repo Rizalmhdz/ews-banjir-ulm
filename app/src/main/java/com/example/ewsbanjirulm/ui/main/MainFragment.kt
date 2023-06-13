@@ -30,7 +30,7 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.message.text = viewModel.getStatusBanjir(30.0, 88.0, 127.0, 100.0)
+        //binding.message.text = viewModel.getStatusBanjir(30.0, 88.0, 127.0, 100.0)
     }
 
     override fun onCreateView(

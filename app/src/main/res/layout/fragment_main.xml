@@ -8,13 +8,228 @@
     tools:context=".ui.main.MainFragment">
 
     <TextView
-        android:id="@+id/message"
+        android:id="@+id/title_kondisi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MainFragment"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="22dp"
+        android:text="@string/kondisi_lapangan"
+        android:textSize="30dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/alarmStatus" />
+
+    <TextView
+        android:id="@+id/text_update_at"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="dd-mm-yyyy hh:mm:ss"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_kondisi" />
+
+    <!--  ICON, LABEL DAN TEXT VALUE UNTUK SUHU  -->
+
+    <Button
+        android:id="@+id/rekap"
+        android:layout_width="168dp"
+        android:layout_height="54dp"
+        android:layout_marginBottom="44dp"
+        android:text="@string/rekap"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/value_curah_hujan"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/icon_curah_hujan"
+        app:layout_constraintTop_toBottomOf="@+id/icon_curah_hujan"
+        app:layout_constraintVertical_bias="1.0"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/simulasi"
+        android:layout_width="164dp"
+        android:layout_height="54dp"
+        android:text="@string/simulasi"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/rekap"
+        app:layout_constraintEnd_toEndOf="@+id/value_kelembaban"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/icon_tinggi_air"
+        app:layout_constraintTop_toTopOf="@+id/rekap"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/alarmStatus"
+        android:layout_width="210dp"
+        android:layout_height="217dp"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintBaseline_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="85dp" />
+
+    <ImageView
+        android:id="@+id/icon_suhu"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="52dp"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintBaseline_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_update_at" />
+
+    <TextView
+        android:id="@+id/label_suhu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="SUHU (CELCIUS)"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/icon_suhu"
+        app:layout_constraintEnd_toEndOf="@+id/icon_suhu"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/icon_suhu" />
+
+    <TextView
+        android:id="@+id/value_suhu"
+        android:layout_width="113dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="8dp"
+        android:text="00.00"
+        android:textSize="40dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/icon_suhu"
+        app:layout_constraintStart_toEndOf="@+id/icon_suhu"
+        app:layout_constraintTop_toTopOf="@+id/icon_suhu"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <!--  ICON, LABEL DAN TEXT VALUE UNTUK KELEMBABAN  -->
+    <ImageView
+        android:id="@+id/icon_kelembaban"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="8dp"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintBaseline_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/icon_suhu"
+        app:layout_constraintStart_toEndOf="@+id/value_suhu"
+        app:layout_constraintTop_toTopOf="@+id/icon_suhu"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/label_kelembaban"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="KELEMBABAN (%)"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/icon_kelembaban"
+        app:layout_constraintEnd_toEndOf="@+id/icon_kelembaban"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/icon_kelembaban" />
+
+    <TextView
+        android:id="@+id/value_kelembaban"
+        android:layout_width="113dp"
+        android:layout_height="47dp"
+        android:layout_marginStart="8dp"
+        android:text="00.00"
+        android:textSize="40dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/icon_kelembaban"
+        app:layout_constraintStart_toEndOf="@+id/icon_kelembaban"
+        app:layout_constraintTop_toTopOf="@+id/icon_kelembaban"
+        app:layout_constraintVertical_bias="0.0" />
+
+
+    <!--  ICON, LABEL DAN TEXT VALUE UNTUK CURAH HUJAN  -->
+    <ImageView
+        android:id="@+id/icon_curah_hujan"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="56dp"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintBaseline_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/icon_suhu"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/icon_suhu"
+        app:layout_constraintTop_toBottomOf="@+id/icon_suhu" />
+
+    <TextView
+        android:id="@+id/label_curah_hujan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="CURAH HUJAN (MM)"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/icon_curah_hujan"
+        app:layout_constraintEnd_toEndOf="@+id/icon_curah_hujan"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/icon_curah_hujan" />
+
+    <TextView
+        android:id="@+id/value_curah_hujan"
+        android:layout_width="105dp"
+        android:layout_height="47dp"
+        android:layout_marginStart="8dp"
+        android:text="000"
+        android:textSize="40dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/icon_curah_hujan"
+        app:layout_constraintStart_toEndOf="@+id/icon_curah_hujan"
+        app:layout_constraintTop_toTopOf="@+id/icon_curah_hujan"
+        app:layout_constraintVertical_bias="0.0" />
+
+
+    <!--  ICON, LABEL DAN TEXT VALUE UNTUK TINGGI AIR  -->
+
+    <ImageView
+        android:id="@+id/icon_tinggi_air"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintBaseline_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/icon_curah_hujan"
+        app:layout_constraintEnd_toEndOf="@+id/icon_kelembaban"
+        app:layout_constraintStart_toStartOf="@+id/icon_kelembaban"
+        app:layout_constraintTop_toTopOf="@+id/icon_curah_hujan" />
+
+    <TextView
+        android:id="@+id/label_tinggi_air"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="TINGGI AIR (CM)"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/icon_tinggi_air"
+        app:layout_constraintEnd_toEndOf="@+id/icon_tinggi_air"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/icon_tinggi_air" />
+
+    <TextView
+        android:id="@+id/value_tinggi_air"
+        android:layout_width="129dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="8dp"
+        android:text="000.00"
+        android:textSize="40dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/icon_tinggi_air"
+        app:layout_constraintStart_toEndOf="@+id/icon_tinggi_air"
+        app:layout_constraintTop_toTopOf="@+id/icon_tinggi_air"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
