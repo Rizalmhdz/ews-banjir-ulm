@@ -1,6 +1,8 @@
 package com.example.ewsbanjirulm.ui.main
 
 import android.content.ContentValues
+import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.os.Message
@@ -24,7 +26,6 @@ class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
 
-    private var dataList: List<String> = emptyList() // Variabel global untuk menyimpan dataList
 
     companion object {
         fun newInstance() = MainFragment()
@@ -54,6 +55,18 @@ class MainFragment : Fragment() {
             val status = viewModel.getStatusBanjir(suhu, kelembaban, curahHujan, tinggiAir)
             binding.titleStatus.text = status
         })
+
+        // Menambahkan listener untuk tombol refresh
+        binding.simulasi.setOnClickListener {
+            // Memanggil fungsi pengambilan data dari ViewModel
+            viewModel.getDataFromFirebase()
+        }
+
+        binding.rekap.setOnClickListener {
+            val url = "https://riset-banjir-ulm-2023.tech/ews_banjir_ulm.php" // Ganti dengan URL yang diinginkan
+            var intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
+        }
     }
 
     override fun onCreateView(

@@ -23,7 +23,7 @@ class MainViewModel : ViewModel() {
         getDataFromFirebase()
     }
 
-    private fun getDataFromFirebase() {
+    fun getDataFromFirebase() {
 
         val path0Ref = database.child("Realtime/lokasi_1/update_at")
         val path1Ref = database.child("Realtime/lokasi_1/dht22/temperature")
