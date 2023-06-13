@@ -3,4 +3,5 @@
     <string name="kondisi_lapangan">KONDISI LAPANGAN</string>
     <string name="rekap">LIHAT RECORD DATA</string>
     <string name="simulasi">LAKUKAN SIMULASI</string>
+    <string name="status">STATUS</string>
 </resources>
