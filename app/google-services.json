@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "201683381421",
+    "firebase_url": "https://risetulm-8a989-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "risetulm-8a989",
+    "storage_bucket": "risetulm-8a989.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:201683381421:android:9f835617d0ceb0a224ea24",
+        "android_client_info": {
+          "package_name": "com.example.ewsbanjirulm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "201683381421-8arb5apd5s1pd6tg70jdovf5ib31sqbo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoe1TJjOz6C4h2oHD_3mr6CGB8hZKXSFY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "201683381421-8arb5apd5s1pd6tg70jdovf5ib31sqbo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:201683381421:android:be135db6aa11eb7924ea24",
+        "android_client_info": {
+          "package_name": "com.example.ewscurahhujanekstrem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "201683381421-8arb5apd5s1pd6tg70jdovf5ib31sqbo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoe1TJjOz6C4h2oHD_3mr6CGB8hZKXSFY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "201683381421-8arb5apd5s1pd6tg70jdovf5ib31sqbo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
