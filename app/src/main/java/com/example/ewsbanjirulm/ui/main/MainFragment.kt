@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.Observer
+import com.example.ewsbanjirulm.R
 import com.example.ewsbanjirulm.databinding.FragmentMainBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -53,7 +54,14 @@ class MainFragment : Fragment() {
             val curahHujan = dataList[3].toDouble()
             val tinggiAir = dataList[4].toDouble()
             val status = viewModel.getStatusBanjir(suhu, kelembaban, curahHujan, tinggiAir)
-            binding.titleStatus.text = status
+            when (status) {
+                "rendah" -> binding.alarmStatus.setImageResource(R.drawable.status_aman)
+                "sedang" -> binding.alarmStatus.setImageResource(R.drawable.status_waspada)
+                "tinggi" -> binding.alarmStatus.setImageResource(R.drawable.status_bahaya)
+                else -> { // Note the block
+                    binding.alarmStatus.setImageResource(com.google.android.material.R.drawable.mtrl_ic_error)
+                }
+            }
         })
 
         // Menambahkan listener untuk tombol refresh
