@@ -5,11 +5,14 @@ import android.app.NotificationManager
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.os.Message
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -125,7 +128,14 @@ class MainFragment : Fragment() {
             .setSmallIcon(R.drawable.icon_curah_hujan) // Ikon kecil notifikasi
             .setContentTitle(title) // Judul notifikasi
             .setContentText(message) // Isi notifikasi
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT) // Prioritas notifikasi
+            .setPriority(NotificationCompat.PRIORITY_HIGH) // Prioritas notifikasi
+
+        // Tampilkan notifikasi sebagai popup (heads-up notification) jika perangkat mendukung
+        builder.setDefaults(NotificationCompat.DEFAULT_ALL)
+
+        // Set efek dering pada notifikasi
+        val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        builder.setSound(soundUri)
 
         // Tampilkan notifikasi
         notificationManager.notify(notificationId, builder.build())
