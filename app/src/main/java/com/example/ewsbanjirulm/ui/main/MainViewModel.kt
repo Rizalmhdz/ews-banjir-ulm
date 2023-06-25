@@ -1,10 +1,17 @@
 package com.example.ewsbanjirulm.ui.main
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ContentValues.TAG
+import android.content.Context
+import android.media.RingtoneManager
+import android.os.Build
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.ewsbanjirulm.R
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DataSnapshot
@@ -21,6 +28,40 @@ class MainViewModel : ViewModel() {
 
     init {
         getDataFromFirebase()
+    }
+
+    fun showNotification(context: Context, title: String, message: String) {
+        // Buat ID unik untuk notifikasi
+        val notificationId = 1
+
+        // Buat instance dari NotificationManager
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Cek versi Android, karena konfigurasi notifikasi berbeda pada versi Android tertentu
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Buat channel untuk notifikasi (hanya perlu dilakukan sekali)
+            val channelId = "my_channel_id"
+            val channelName = "My Channel"
+            val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT)
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        // Buat builder untuk notifikasi
+        val builder = NotificationCompat.Builder(context, "my_channel_id")
+            .setSmallIcon(R.drawable.icon_curah_hujan) // Ikon kecil notifikasi
+            .setContentTitle(title) // Judul notifikasi
+            .setContentText(message) // Isi notifikasi
+            .setPriority(NotificationCompat.PRIORITY_HIGH) // Prioritas notifikasi
+
+        // Tampilkan notifikasi sebagai popup (heads-up notification) jika perangkat mendukung
+        builder.setDefaults(NotificationCompat.DEFAULT_ALL)
+
+        // Set efek dering pada notifikasi
+        val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        builder.setSound(soundUri)
+
+        // Tampilkan notifikasi
+        notificationManager.notify(notificationId, builder.build())
     }
 
     fun getDataFromFirebase() {
@@ -88,7 +129,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun getLabelInput1(a:Double=0.0, b:Double=0.0, c:Double=0.0, d:Double=0.0): Array<String>{
+    fun getLabelInput(a:Double=0.0, b:Double=0.0, c:Double=0.0, d:Double=0.0): Array<String>{
         val suhu = a
         val kelembaban = b
         val curahHujan = c

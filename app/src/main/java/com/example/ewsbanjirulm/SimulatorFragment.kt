@@ -1,31 +1,104 @@
 package com.example.ewsbanjirulm
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.content.Intent
+import android.media.RingtoneManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.example.ewsbanjirulm.databinding.FragmentMainBinding
+import com.example.ewsbanjirulm.databinding.FragmentSimulatorBinding
+import com.example.ewsbanjirulm.ui.main.MainFragment
+import com.example.ewsbanjirulm.ui.main.MainViewModel
+import java.text.DecimalFormat
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SimulatorFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SimulatorFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var _binding: FragmentSimulatorBinding? = null
+    private val binding get() = _binding!!
 
+
+    companion object {
+        fun newInstance() = SimulatorFragment()
+    }
+
+
+    private lateinit var viewModel: MainViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        placeHolder(binding.valueSuhu)
+        placeHolder(binding.valueKelembaban)
+        placeHolder(binding.valueCurahHujan)
+        placeHolder(binding.valueTinggiAir)
+
+        binding.alarmStatus.setOnClickListener {
+            // Memanggil fungsi pengambilan data dari ViewModel
+            viewModel.getDataFromFirebase()
+        }
+
+        // Menambahkan fungsi untuk simulasi
+        binding.simulasi.setOnClickListener {
+            val suhu = binding.valueSuhu.text.toString()
+            val kelembaban = binding.valueKelembaban.text.toString()
+            val curahHujan = binding.valueCurahHujan.text.toString()
+            val tinggiAir = binding.valueTinggiAir.text.toString()
+            // Cek jika teks kosong
+            if (suhu.isNotEmpty() && kelembaban.isNotEmpty() && curahHujan.isNotEmpty() && tinggiAir.isNotEmpty()) {
+                val centroid = viewModel.getStatusBanjir(suhu.toDouble(), kelembaban.toDouble(), curahHujan.toDouble(), tinggiAir.toDouble())
+                val label = viewModel.getLabelInput(suhu.toDouble(), kelembaban.toDouble(), curahHujan.toDouble(), tinggiAir.toDouble())
+                binding.kelasSuhu.text = label[0]
+                binding.kelasKelembaban.text = label[1]
+                binding.kelasCurahHujan.text = label[2]
+                binding.kelasTinggiAir.text = label[3]
+
+                val status = viewModel.classifyOutput(centroid[2])
+                binding.centroidPotensi.text = DecimalFormat("#.###").format(centroid[0]).toString()
+                binding.centroidResiko.text = DecimalFormat("#.###").format(centroid[1]).toString()
+                binding.centroidStatus.text = DecimalFormat("#.###").format(centroid[2]).toString()
+                when (status) {
+                    "rendah" -> binding.alarmStatus.setImageResource(R.drawable.status_aman)
+                    "sedang" -> binding.alarmStatus.setImageResource(R.drawable.status_waspada)
+                    "tinggi" -> {
+                        val judulNotif = "STATUS BANJIR BAHAYA"
+                        val isiNotif = "Resiko Banjir Cukup Membahayakan"
+                        binding.alarmStatus.setImageResource(R.drawable.status_bahaya)
+                        viewModel.showNotification(requireContext(), judulNotif, isiNotif)
+
+                    }
+                    else -> { // Note the block
+                        binding.alarmStatus.setImageResource(com.google.android.material.R.drawable.mtrl_ic_error)
+                    }
+                }
+            } else {
+                // Tindakan yang akan dilakukan jika nilai EditText kosong
+                Toast.makeText(requireContext(), "Nilai harus diisi!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun placeHolder(editText: EditText){
+        editText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                editText.hint = ""
+            } else {
+                editText.hint = "Input"
+            }
         }
     }
 
@@ -33,27 +106,13 @@ class SimulatorFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_simulator, container, false)
+        _binding = FragmentSimulatorBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SimulatorFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SimulatorFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

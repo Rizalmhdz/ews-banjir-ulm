@@ -73,7 +73,7 @@ class MainFragment : Fragment() {
                     val judulNotif = "STATUS BANJIR BAHAYA"
                     val isiNotif = "Resiko Banjir Cukup Membahayakan"
                     binding.alarmStatus.setImageResource(R.drawable.status_bahaya)
-                    showNotification(requireContext(), judulNotif, isiNotif)
+                    viewModel.showNotification(requireContext(), judulNotif, isiNotif)
 
                 }
                 else -> { // Note the block
@@ -115,40 +115,5 @@ class MainFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    // Fungsi untuk membuat dan menampilkan notifikasi
-    fun showNotification(context: Context, title: String, message: String) {
-        // Buat ID unik untuk notifikasi
-        val notificationId = 1
-
-        // Buat instance dari NotificationManager
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        // Cek versi Android, karena konfigurasi notifikasi berbeda pada versi Android tertentu
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Buat channel untuk notifikasi (hanya perlu dilakukan sekali)
-            val channelId = "my_channel_id"
-            val channelName = "My Channel"
-            val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT)
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        // Buat builder untuk notifikasi
-        val builder = NotificationCompat.Builder(context, "my_channel_id")
-            .setSmallIcon(R.drawable.icon_curah_hujan) // Ikon kecil notifikasi
-            .setContentTitle(title) // Judul notifikasi
-            .setContentText(message) // Isi notifikasi
-            .setPriority(NotificationCompat.PRIORITY_HIGH) // Prioritas notifikasi
-
-        // Tampilkan notifikasi sebagai popup (heads-up notification) jika perangkat mendukung
-        builder.setDefaults(NotificationCompat.DEFAULT_ALL)
-
-        // Set efek dering pada notifikasi
-        val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        builder.setSound(soundUri)
-
-        // Tampilkan notifikasi
-        notificationManager.notify(notificationId, builder.build())
     }
 }
