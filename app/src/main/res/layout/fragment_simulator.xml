@@ -7,76 +7,60 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.MainFragment">
 
+    <!--  ICON, LABEL DAN TEXT VALUE UNTUK SUHU  -->
+
     <TextView
         android:id="@+id/title_kondisi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="100dp"
         android:text="@string/input_parameter"
         android:textSize="30dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/alarmStatus"
-        app:layout_constraintHorizontal_bias="0.509"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="@+id/alarmStatus"
         app:layout_constraintTop_toBottomOf="@id/alarmStatus" />
 
     <TextView
         android:id="@+id/title_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_width="117dp"
+        android:layout_height="37dp"
         android:text="@string/status"
         android:textSize="30dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/alarmStatus"
+        app:layout_constraintBottom_toTopOf="@+id/title_kondisi"
         app:layout_constraintEnd_toEndOf="@+id/alarmStatus"
-        app:layout_constraintHorizontal_bias="0.392"
-        app:layout_constraintStart_toStartOf="@+id/alarmStatus"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <!--  ICON, LABEL DAN TEXT VALUE UNTUK SUHU  -->
-
-    <Button
-        android:id="@+id/rekap"
-        android:layout_width="164dp"
-        android:layout_height="57dp"
-        android:layout_marginTop="64dp"
-        android:text="@string/rekap"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/value_curah_hujan"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/icon_curah_hujan"
-        app:layout_constraintTop_toBottomOf="@+id/icon_curah_hujan"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintStart_toStartOf="@+id/alarmStatus"
+        app:layout_constraintTop_toBottomOf="@+id/alarmStatus"
+        app:layout_constraintVertical_bias="0.16" />
 
     <Button
         android:id="@+id/simulasi"
         android:layout_width="170dp"
         android:layout_height="57dp"
-        android:text="@string/simulasi"
+        android:layout_marginTop="260dp"
+        android:text="MULAI SIMULASI"
         android:textSize="12sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/rekap"
-        app:layout_constraintEnd_toEndOf="@+id/value_kelembaban"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/value_suhu"
-        app:layout_constraintTop_toTopOf="@+id/rekap"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintEnd_toEndOf="@+id/title_kondisi"
+        app:layout_constraintHorizontal_bias="0.475"
+        app:layout_constraintStart_toStartOf="@+id/title_kondisi"
+        app:layout_constraintTop_toBottomOf="@+id/title_kondisi" />
 
     <ImageView
         android:id="@+id/alarmStatus"
-        android:layout_width="163dp"
-        android:layout_height="183dp"
+        android:layout_width="118dp"
+        android:layout_height="114dp"
         android:src="@drawable/status_aman"
         app:layout_constraintBaseline_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.124" />
+        app:layout_constraintVertical_bias="0.025" />
 
     <ImageView
         android:id="@+id/icon_suhu"
@@ -141,6 +125,70 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/icon_curah_hujan"
         app:layout_constraintTop_toBottomOf="@+id/icon_curah_hujan" />
+
+
+    <TextView
+        android:id="@+id/centroid_status"
+        android:layout_width="73dp"
+        android:layout_height="28dp"
+        android:text="0.0"
+        android:textAlignment="center"
+        android:layout_marginTop="10dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/title_status"
+        app:layout_constraintStart_toStartOf="@+id/title_status"
+        app:layout_constraintTop_toBottomOf="@+id/title_status" />
+
+    <TextView
+        android:id="@+id/label_potensi"
+        android:layout_width="73dp"
+        android:layout_height="28dp"
+        android:text="Potensi"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/centroid_potensi"
+        app:layout_constraintEnd_toEndOf="@+id/centroid_potensi"
+        app:layout_constraintStart_toStartOf="@+id/centroid_potensi" />
+
+    <TextView
+        android:id="@+id/centroid_potensi"
+        android:layout_width="73dp"
+        android:layout_height="28dp"
+        android:text="0.0"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/centroid_status"
+        app:layout_constraintEnd_toStartOf="@+id/centroid_status"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/centroid_status" />
+
+    <TextView
+        android:id="@+id/label_resiko"
+        android:layout_width="73dp"
+        android:layout_height="28dp"
+        android:text="Resiko"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/centroid_resiko"
+        app:layout_constraintEnd_toEndOf="@+id/centroid_resiko"
+        app:layout_constraintStart_toStartOf="@+id/centroid_resiko" />
+
+    <TextView
+        android:id="@+id/centroid_resiko"
+        android:layout_width="73dp"
+        android:layout_height="28dp"
+        android:text="0.0"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/centroid_status"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/centroid_status"
+        app:layout_constraintTop_toTopOf="@+id/centroid_status" />
 
     <TextView
         android:id="@+id/label_kelas4"

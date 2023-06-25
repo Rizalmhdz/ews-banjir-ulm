@@ -61,19 +61,18 @@ class MainViewModel : ViewModel() {
                 Log.e("ExampleViewModel", "Error getting data: ${exception.message}")
             }
     }
-    fun getStatusBanjir(suhu: Double, kelembaban:Double, curahHujan: Double, tinggiAir: Double): String{
+    fun getStatusBanjir(suhu: Double, kelembaban:Double, curahHujan: Double, tinggiAir: Double): DoubleArray{
         val rules = rulesPotensi(suhu, kelembaban)
-        val centroid = evaluateRules(rules)
+        val potensi = evaluateRules(rules)
 
-        val rules1 = rulesResiko(centroid, curahHujan)
-        val centroid1 = evaluateRules(rules1)
+        val rules1 = rulesResiko(potensi, curahHujan)
+        val resiko = evaluateRules(rules1)
 
-        val rules2 = rulesStatus(centroid1, tinggiAir)
-        val centroid2 = evaluateRules(rules2)
-        val labelStatus = classifyOutput(centroid2)
+        val rules2 = rulesStatus(resiko, tinggiAir)
+        val status = evaluateRules(rules2)
 
 
-        return labelStatus
+        return doubleArrayOf(potensi, resiko, status)
     }
 
     fun classifyOutput(centroid: Double): String{

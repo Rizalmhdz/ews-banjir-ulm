@@ -22,6 +22,7 @@ import android.widget.TextView
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Observer
 import com.example.ewsbanjirulm.R
+import com.example.ewsbanjirulm.SimulatorFragment
 import com.example.ewsbanjirulm.databinding.FragmentMainBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -63,7 +64,8 @@ class MainFragment : Fragment() {
             val kelembaban = dataList[2].toDouble()
             val curahHujan = dataList[3].toDouble()
             val tinggiAir = dataList[4].toDouble()
-            val status = viewModel.getStatusBanjir(suhu, kelembaban, curahHujan, tinggiAir)
+            val centroid = viewModel.getStatusBanjir(suhu, kelembaban, curahHujan, tinggiAir)
+            val status = viewModel.classifyOutput(centroid[2])
             when (status) {
                 "rendah" -> binding.alarmStatus.setImageResource(R.drawable.status_aman)
                 "sedang" -> binding.alarmStatus.setImageResource(R.drawable.status_waspada)
@@ -80,10 +82,19 @@ class MainFragment : Fragment() {
             }
         })
 
-        // Menambahkan listener untuk tombol refresh
-        binding.simulasi.setOnClickListener {
+        binding.alarmStatus.setOnClickListener {
             // Memanggil fungsi pengambilan data dari ViewModel
             viewModel.getDataFromFirebase()
+        }
+
+        // Menambahkan listener untuk tombol refresh
+        binding.simulasi.setOnClickListener {
+            val fragmentSimulator = SimulatorFragment()
+            val fragmentManager = requireActivity().supportFragmentManager
+            fragmentManager.beginTransaction()
+                .replace(R.id.container, fragmentSimulator)
+                .addToBackStack(null) // Tambahkan ke back stack agar bisa kembali ke Fragment A
+                .commit()
         }
 
         binding.rekap.setOnClickListener {
