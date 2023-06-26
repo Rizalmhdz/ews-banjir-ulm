@@ -8,6 +8,7 @@ import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,6 +24,13 @@ class MainViewModel : ViewModel() {
     private val database = Firebase.database.reference
 
     private val _dataList = MutableLiveData<List<String>>()
+
+    val path0Ref = database.child("Realtime/lokasi_1/update_at")
+    val path1Ref = database.child("Realtime/lokasi_1/dht22/temperature")
+    val path2Ref = database.child("Realtime/lokasi_1/dht22/kelembaban")
+    val path3Ref = database.child("Realtime/lokasi_1/total_tip")
+    val path4Ref = database.child("Realtime/lokasi_1/tinggi_air_sungai")
+
     val dataList: LiveData<List<String>>
         get() = _dataList
 
@@ -66,11 +74,6 @@ class MainViewModel : ViewModel() {
 
     fun getDataFromFirebase() {
 
-        val path0Ref = database.child("Realtime/lokasi_1/update_at")
-        val path1Ref = database.child("Realtime/lokasi_1/dht22/temperature")
-        val path2Ref = database.child("Realtime/lokasi_1/dht22/kelembaban")
-        val path3Ref = database.child("Realtime/lokasi_1/total_tip")
-        val path4Ref = database.child("Realtime/lokasi_1/tinggi_air_sungai")
 
         val dataTasks = mutableListOf<Task<DataSnapshot>>()
 
@@ -86,20 +89,22 @@ class MainViewModel : ViewModel() {
         Tasks.whenAllSuccess<DataSnapshot>(dataTasks)
             .addOnSuccessListener { snapshots ->
                 val dataList = mutableListOf<String>()
-
+                var i = 0
                 // Mengambil nilai dari setiap DataSnapshot dan menyimpannya dalam dataList
                 for (snapshot in snapshots) {
                     val value = snapshot.getValue(String::class.java)
                     if (value != null) {
+
                         dataList.add(value)
+                        Log.d("getDataFromFirebase","data baru di update [$i] : ($value)")
+                        i++
                     }
                 }
-
                 _dataList.value = dataList
             }
             .addOnFailureListener { exception ->
                 // Penanganan kesalahan jika terjadi
-                Log.e("ExampleViewModel", "Error getting data: ${exception.message}")
+                Log.e("getDataFromFirebase", "Error getting data: ${exception.message}")
             }
     }
     fun getStatusBanjir(suhu: Double, kelembaban:Double, curahHujan: Double, tinggiAir: Double): DoubleArray{
@@ -188,7 +193,6 @@ class MainViewModel : ViewModel() {
         return arrayOf(label1, label2, label3, label4)
 
     }
-
 
     // =========================================== EVALUATE RULES ============================================
     private fun evaluateRules(rules: Array<DoubleArray>): Double{
@@ -409,15 +413,15 @@ class MainViewModel : ViewModel() {
         val slopeAB = getSlope(pointA, 0.0, pointB, 1.0)
         val slopeBC = getSlope(pointB, 1.0, pointC, 0.0)
         var result = 0.0
-        if (x >= pointA && x <= pointB) {
+        if (x in pointA..pointB) {
             result = slopeAB * x + getYIntercept(pointA, 0.0, pointB, 1.0)
-        } else if (x >= pointB && x <= pointC) {
+        } else if (x in pointB..pointC) {
             result = slopeBC * x + getYIntercept(pointB, 1.0, pointC, 0.0)
         }
         return result
     }
 
-    fun trapmf(x: Double, points: List<Double>): Double {
+    private fun trapmf(x: Double, points: List<Double>): Double {
         val pointA = points[0]
         val pointB = points[1]
         val pointC = points[2]
@@ -429,7 +433,7 @@ class MainViewModel : ViewModel() {
         var result = 0.0
         if (x > pointA && x < pointB) {
             result = slopeAB * x + yInterceptAB
-        } else if (x >= pointB && x <= pointC) {
+        } else if (x in pointB..pointC) {
             result = 1.0
         } else if (x > pointC && x < pointD) {
             result = slopeCD * x + yInterceptCD
@@ -437,7 +441,7 @@ class MainViewModel : ViewModel() {
         return result
     }
 
-    fun getSlope(x1: Double, y1: Double, x2: Double, y2: Double): Double {
+    private fun getSlope(x1: Double, y1: Double, x2: Double, y2: Double): Double {
         // Avoid zero division error of vertical line for shouldered trapmf
         var slope: Double
         try {
@@ -448,7 +452,7 @@ class MainViewModel : ViewModel() {
         return slope
     }
 
-    fun getYIntercept(x1: Double, y1: Double, x2: Double, y2: Double): Double {
+    private fun getYIntercept(x1: Double, y1: Double, x2: Double, y2: Double): Double {
         val m = getSlope(x1, y1, x2, y2)
         val y: Double
         val x: Double
@@ -462,7 +466,7 @@ class MainViewModel : ViewModel() {
         return y - m * x
     }
 
-    fun getTrimfPlots(start: Int, end: Int, points: List<Double>): MutableList<Double> {
+    private fun getTrimfPlots(start: Int, end: Int, points: List<Double>): MutableList<Double> {
         val plots = MutableList(end - start + 1) { 0.0 }
         val pointA = points[0]
         val pointB = points[1]
@@ -480,7 +484,7 @@ class MainViewModel : ViewModel() {
         return plots
     }
 
-    fun getTrapmfPlots(start: Int, end: Int, points: List<Double>, shoulder: String?): MutableList<Double> {
+    private fun getTrapmfPlots(start: Int, end: Int, points: List<Double>, shoulder: String?): MutableList<Double> {
         val plots = MutableList(end - start + 1) { 0.0 }
         val pointA = points[0]
         val pointB = points[1]
@@ -511,7 +515,7 @@ class MainViewModel : ViewModel() {
         return plots
     }
 
-    fun getCentroid(aggregatedPlots: DoubleArray): Double {
+    private fun getCentroid(aggregatedPlots: DoubleArray): Double {
         val n = aggregatedPlots.size
         val xAxis = DoubleArray(n) { it.toDouble() }
         var centroidNum = 0.0

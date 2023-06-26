@@ -1,59 +1,74 @@
 package com.example.ewsbanjirulm.ui.main
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.ContentValues
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.media.RingtoneManager
 import android.net.Uri
-import android.os.Build
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.os.Message
-import android.os.VibrationEffect
-import android.os.Vibrator
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Observer
 import com.example.ewsbanjirulm.R
 import com.example.ewsbanjirulm.SimulatorFragment
 import com.example.ewsbanjirulm.databinding.FragmentMainBinding
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
+import com.example.ewsbanjirulm.service.AlarmReceiver
+import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.eventbus.Subscribe
+import java.util.Calendar
 
 class MainFragment : Fragment() {
 
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
+    private val interval : Long = 3 * 60 * 1000
 
+    private lateinit var alarmManager: AlarmManager
+    private lateinit var pendingIntent: PendingIntent
 
+    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var runnable: Runnable
+
+    fun repeater(){
+        // Set up the repeating task
+        println("mulai repeeater")
+        runnable = object : Runnable {
+            override fun run() {
+                // Do the task that needs to be repeated
+                viewModel.getDataFromFirebase()
+
+                // Schedule the next execution after a delay (e.g., 3 minutes)
+                handler.postDelayed(this, interval) // 3 minutes in milliseconds
+                Log.d("repeater", "data baru coy")
+            }
+        }
+        // Start the repeating task
+        handler.postDelayed(runnable, 0)
+    }
     companion object {
         fun newInstance() = MainFragment()
     }
-
-
     private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
+        alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(requireContext(), AlarmReceiver::class.java)
+        pendingIntent = PendingIntent.getBroadcast(requireContext(), 0, intent, 0)
+        startAlarm()
+        repeater()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Observasi LiveData dari ViewModel untuk mendapatkan pembaruan data secara otomatis
-        // Mendapatkan referensi ke NotificationManager
-
         viewModel.dataList.observe(viewLifecycleOwner, Observer { dataList ->
             binding.textUpdateAt.text = dataList[0]
             binding.valueSuhu.text = dataList[1]
@@ -108,12 +123,34 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         _binding = FragmentMainBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        stopAlarm()
+        handler.removeCallbacks(runnable)
         _binding = null
+    }
+
+    private fun startAlarm() {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = System.currentTimeMillis()
+        calendar.add(Calendar.SECOND, 3)
+
+        // Set alarm untuk berulang setiap 5 menit
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            interval,  // interva dalam milidetik
+            pendingIntent
+        )
+    }
+
+    private fun stopAlarm() {
+        // Batalkan alarm
+        alarmManager.cancel(pendingIntent)
     }
 }
