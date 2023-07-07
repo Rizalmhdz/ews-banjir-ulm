@@ -8,10 +8,14 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
@@ -46,6 +50,24 @@ class SimulatorFragment : Fragment() {
         placeHolder(binding.valueKelembaban)
         placeHolder(binding.valueCurahHujan)
         placeHolder(binding.valueTinggiAir)
+
+        setEditTextAction(binding.valueSuhu, binding.valueKelembaban)
+        setEditTextAction(binding.valueKelembaban, binding.valueCurahHujan)
+        binding.valueCurahHujan.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
+                binding.valueTinggiAir.requestFocus()
+                return@OnKeyListener true
+            }
+            return@OnKeyListener false
+        })
+
+
+        setLastEditTextAction(binding.valueTinggiAir)
+
+        setRangeFilter(binding.valueSuhu, 0, 40)
+        setRangeFilter(binding.valueKelembaban, 0, 100)
+        setRangeFilter(binding.valueCurahHujan, 0, 250)
+        setRangeFilter(binding.valueTinggiAir, 0, 200)
 
         binding.alarmStatus.setOnClickListener {
             // Memanggil fungsi pengambilan data dari ViewModel
@@ -92,15 +114,62 @@ class SimulatorFragment : Fragment() {
         }
     }
 
+    // Mengatur aksi Enter pada Edit Text
+    fun setEditTextAction(editText: EditText, nextEditText: EditText?) {
+        editText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                nextEditText?.requestFocus()
+                return@setOnEditorActionListener true
+            }
+            return@setOnEditorActionListener false
+        }
+    }
+
+    // Mengatur aksi Enter pada EditText terakhir
+    fun setLastEditTextAction(editText: EditText) {
+        editText.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
+                // Proses semua input setelah tombol Enter ditekan pada EditText terakhir
+                binding.simulasi.performClick()
+                return@OnKeyListener true
+            }
+            return@OnKeyListener false
+        })
+    }
+
     fun placeHolder(editText: EditText){
+        val hint = editText.hint.toString()
         editText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 editText.hint = ""
             } else {
-                editText.hint = "Input"
+                editText.hint = hint
             }
         }
     }
+    // Mengatur TextWatcher pada EditText
+    fun setRangeFilter(editText: EditText, min: Int, max: Int) {
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // Tidak ada tindakan sebelum perubahan teks
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Tidak ada tindakan saat perubahan teks terjadi
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                val input = s.toString().toDoubleOrNull()
+
+                if (input != null && (input < min || input > max)) {
+                    editText.error = "Masukkan angka dalam rentang $min - $max"
+                } else {
+                    editText.error = null
+                }
+            }
+        })
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
